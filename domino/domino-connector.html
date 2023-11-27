@@ -1,0 +1,39 @@
+<!-- Copyright (C) 2023 HCL America Inc. Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0  -->
+<script type="text/javascript">
+  RED.nodes.registerType('domino-connector', {
+    category: 'config',
+    defaults: {
+      baseUrl: { value: 'http://localhost:8880', required: true },
+      api: { value: 'basis', required: true }
+    },
+    label: function () {
+      let result = 'unconfigured';
+      if (this.api && this.baseUrl) {
+        result = this.baseUrl + ':' + this.api;
+      }
+      return result;
+    },
+    oneditprepare: function () {
+      getKeepApiList($('#node-config-input-baseUrl').val())
+        .then((apiList) => $('#node-config-input-api').typedInput(apiList))
+        .catch((e) => console.error(e));
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="domino-connector">
+  <div class="form-row">
+    <label for="node-config-input-baseUrl"
+      ><i class="fa fa-globe"></i> Base URL</label
+    >
+    <input type="url" id="node-config-input-baseUrl" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-api"><i class="fa fa-sitemap"></i> API</label>
+    <input type="text" id="node-config-input-api" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="domino-connector">
+  <p>Configure which API you like to talk to</p>
+</script>

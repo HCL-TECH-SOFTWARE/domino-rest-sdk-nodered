@@ -1,0 +1,106 @@
+[
+    {
+        "id": "a784aa09ec1310bc",
+        "type": "tab",
+        "label": "Domino Node",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b9a7d3f49cd74a7d",
+        "type": "inject",
+        "z": "a784aa09ec1310bc",
+        "name": "Create a doc",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 140,
+        "wires": [
+            [
+                "1e397cebc5b7c413"
+            ]
+        ]
+    },
+    {
+        "id": "1e397cebc5b7c413",
+        "type": "template",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n  \"body\" : {\n    \"Form\": \"Customer\",\n    \"first_name\": \"Peter\",\n    \"last_name\": \"Pan\",\n    \"email\": \"Peter@pan.neverland\",\n    \"hobbies\": [\"beer\",\"whiskey\"],\n    \"consent\": true,\n    \"color\" : \"Red\",\n    \"employee_count\" : 42,\n    \"Owner\" : \"Tony Stark\",\n    \"Pet\" : \"Hulk\",\n    \"Body\" : \"Hello world\"\n  }\n}",
+        "output": "json",
+        "x": 200,
+        "y": 200,
+        "wires": [
+            [
+                "2020838072e4cf86"
+            ]
+        ]
+    },
+    {
+        "id": "2020838072e4cf86",
+        "type": "domino-user-session",
+        "z": "a784aa09ec1310bc",
+        "name": "to Domino",
+        "access": "9a8182a9f4476dc2",
+        "connector": "c8048c5f1270a3b0",
+        "operationId": "createDocument",
+        "scope": "demoapi",
+        "x": 240,
+        "y": 280,
+        "wires": [
+            [
+                "3a17bbdbc33eea52"
+            ]
+        ]
+    },
+    {
+        "id": "3a17bbdbc33eea52",
+        "type": "debug",
+        "z": "a784aa09ec1310bc",
+        "name": "Result",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "9a8182a9f4476dc2",
+        "type": "domino-access",
+        "name": "localhost:8880",
+        "baseUrl": "http://localhost:8880",
+        "scope": "$DATA",
+        "authtype": "basic"
+    },
+    {
+        "id": "c8048c5f1270a3b0",
+        "type": "domino-connector",
+        "baseUrl": "https://http://localhost:8880",
+        "api": "basis"
+    }
+]

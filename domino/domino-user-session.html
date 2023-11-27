@@ -1,0 +1,210 @@
+<!-- Copyright (C) 2023 HCL America Inc. Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0  -->
+<script src="resources/@hcl-software/node-red-domino/keeplib.js"></script>
+<script type="text/javascript">
+  RED.nodes.registerType('domino-user-session', {
+    defaults: {
+      name: { value: '' },
+      access: { value: '', type: 'domino-access' },
+      connector: { value: '', type: 'domino-connector' },
+      operationId: { value: '' },
+      scope: { value: '' },
+      singleReturn: { value: '' }
+    },
+    inputs: 1,
+    outputs: 1,
+    category: 'network',
+    color: '#acfffc',
+    icon: 'font-awesome/fa-database',
+    label: function () {
+      return this.name || 'HCL Domino (' + this.operationId + ')';
+    },
+    inputLabels: 'request to send to HCL Domino',
+    outputLabels: 'response(s) from HCL Domino',
+    paletteLabel: 'HCL Domino',
+    oneditprepare: function () {
+      let connector = RED.nodes.node(this.connector);
+      let baseUrl = connector.baseUrl;
+      let api = connector.api;
+      getScopes(baseUrl)
+        .then((ti) => $('#node-input-scope').typedInput(ti))
+        .catch((e) => console.error(e));
+      getOperationIds(baseUrl, api)
+        .then((ti) => $('#node-input-operationId').typedInput(ti))
+        .catch((e) => console.error(e));
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="domino-user-session">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-access">
+      <i class="fa fa-ticket"></i> Credentials
+    </label>
+    <input type="text" id="node-input-access" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-connector">
+      <i class="fa fa-folder-open"></i> Connection
+    </label>
+    <input type="text" id="node-input-connector" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-scope">
+      <i class="fa fa-bullseye"></i> scope
+    </label>
+    <input type="text" id="node-input-scope" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-operationId">
+      <i class="fa fa-cube"></i> Operation Id
+    </label>
+    <input type="text" id="node-input-operationId" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-singleReturn">
+      <i class="fa fa-magic"></i> reply
+    </label>
+    <label for="node-input-singleReturn" style="width:70%">
+      <input
+        type="checkbox"
+        id="node-input-singleReturn"
+        style="display:inline-block; width:22px; vertical-align:top;"
+        autocomplete="off"
+      /><span>single result (no splitting)</span>
+    </label>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="domino-user-session">
+  <p>
+    Connects to an HCL Domino server's REST API for CRUD and other operations
+  </p>
+
+  <h3>Inputs</h3>
+
+  <dl class="message-properties">
+    <dt>
+      payload
+      <span class="property-type">json</span>
+    </dt>
+    <dd>payload to use in domino operation</dd>
+    <dt class="optional">
+      unid
+      <span class="property-type">string</span>
+    </dt>
+    <dd>Document UNID (if needed) overwrites unid in params</dd>
+    <!--  Not yet implemented
+    <dt class="optional">
+      scope
+      <span class="property-type">string</span>
+    </dt>
+    <dd>overwrite the confiured scope.</dd>
+    <dt class="optional">
+      operationId
+      <span class="property-type">string</span>
+    </dt>
+    <dd>overwrite the confgured operationId.</dd>
+  </dl> -->
+
+    <h3>Outputs</h3>
+
+    <dl class="message-properties">
+      <dt>
+        payload
+        <span class="property-type">json</span>
+      </dt>
+      <dd>result coming back from Domino.</dd>
+      <dt>
+        status
+        <span class="property-type">number</span>
+      </dt>
+      <dd>HTTP status of operation result.</dd>
+    </dl>
+
+    <h3>Details</h3>
+
+    <p>
+      <code>msg.payload</code> is used as the source of Domino interaction. It
+      can contain two elements, params &amp; body.
+    </p>
+
+    <p>
+      The params object will be mapped to path and query parameters defined by
+      the operationId, the body will be send in POST, PUT, PATCH operations
+    </p>
+
+    <code>
+      <pre>
+    {
+      "params": {
+        "unid": "B66880940B8DDC12802585180049E945",
+        "documents": true
+        },
+     "body": {}
+     }
+  </pre
+      >
+    </code>
+
+    <h3>Configuration</h3>
+
+    <dl class="message-properties">
+      <dt>
+        Name
+        <span class="property-type">string</span>
+      </dt>
+      <dd>a Name in the UI, computed when missing</dd>
+      <dt>
+        Credentials
+        <span class="property-type">domino-access</span>
+      </dt>
+      <dd>Configuration with scopes and Credentials</dd>
+      <dt>
+        Connection
+        <span class="property-type">domino-connector</span>
+      </dt>
+      <dd>Domino server and API to interact with</dd>
+      <dt>
+        scope
+        <span class="property-type">string</span>
+      </dt>
+      <dd>database to interact with</dd>
+      <dt>
+        Operation Id
+        <span class="property-type">string</span>
+      </dt>
+      <dd>Operation to execute</dd>
+      <dt>
+        Single Result
+        <span class="property-type">boolean</span>
+      </dt>
+      <dd>
+        Combine a streamed result into a single responsse e.g. needed for http
+        response node
+      </dd>
+    </dl>
+
+    <h3>References</h3>
+
+    <ul>
+      <li>
+        <a href="https://opensource.hcltechsw.com/Domino-rest-api/"
+          >REST API documentation</a
+        >
+      </li>
+      <li>
+        <a href="https://github.com/HCL-TECH-SOFTWARE/domino-rest-sdk-nodered"
+          >github repository of HCL Domino nodes</a
+        >
+      </li>
+    </ul>
+  </dl>
+</script>

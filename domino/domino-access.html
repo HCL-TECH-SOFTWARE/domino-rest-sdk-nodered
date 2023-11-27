@@ -1,0 +1,75 @@
+<!-- Copyright (C) 2023 HCL America Inc. Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0  -->
+<script type="text/javascript">
+  RED.nodes.registerType('domino-access', {
+    category: 'config',
+    defaults: {
+      name: { value: '', required: true },
+      baseUrl: { value: 'http://localhost:8880', required: true },
+      scope: { value: '$DATA', required: true },
+      authtype: { value: 'basic', required: true }
+    },
+    credentials: {
+      username: { type: 'text' },
+      password: { type: 'password' }
+    },
+    label: function () {
+      return this.name + ': ' + this.scope;
+    },
+    oneditprepare: function () {
+      getAuthMethods()
+        .then((ti) => $('#node-config-input-authtype').typedInput(ti))
+        .catch((e) => console.error(e));
+      getScopes($('#node-config-input-baseUrl').val())
+        .then((ti) => {
+          ti.types[0].multiple = 'true';
+          $('#node-config-input-scope').typedInput(ti);
+        })
+        .catch((e) => console.error(e));
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="domino-access">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-baseUrl">
+      <i class="fa fa-globe"></i> Base URL
+    </label>
+    <input type="url" id="node-config-input-baseUrl" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-scope">
+      <i class="fa fa-gears"></i> Scopes
+    </label>
+    <input type="text" id="node-config-input-scope" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-authtype">
+      <i class="fa fa-user"></i> Auth type
+    </label>
+    <input type="text" id="node-config-input-authtype" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-username">
+      <i class="fa fa-user"></i> Username
+    </label>
+    <input type="text" id="node-config-input-username" />
+  </div>
+
+  <div class="form-row">
+    <label for="node-config-input-password">
+      <i class="fa fa-file"></i> Password
+    </label>
+    <input type="password" id="node-config-input-password" />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="domino-access">
+  <p>Credentials for Domino</p>
+</script>

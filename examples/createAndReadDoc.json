@@ -1,0 +1,199 @@
+[
+    {
+        "id": "a784aa09ec1310bc",
+        "type": "tab",
+        "label": "Domino Node",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b9a7d3f49cd74a7d",
+        "type": "inject",
+        "z": "a784aa09ec1310bc",
+        "name": "kick off",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "1e397cebc5b7c413"
+            ]
+        ]
+    },
+    {
+        "id": "1e397cebc5b7c413",
+        "type": "template",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n  \"body\" : {\n    \"Form\": \"Customer\",\n    \"first_name\": \"Peter\",\n    \"last_name\": \"Pan\",\n    \"email\": \"Peter@pan.neverland\",\n    \"hobbies\": [\"beer\",\"whiskey\"],\n    \"consent\": true,\n    \"color\" : \"Red\",\n    \"employee_count\" : 42,\n    \"Owner\" : \"Tony Stark\",\n    \"Pet\" : \"Hulk\",\n    \"Body\" : \"Hello world\"\n  }\n}",
+        "output": "json",
+        "x": 260,
+        "y": 140,
+        "wires": [
+            [
+                "2020838072e4cf86"
+            ]
+        ]
+    },
+    {
+        "id": "2020838072e4cf86",
+        "type": "domino-user-session",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "access": "9a8182a9f4476dc2",
+        "connector": "c8048c5f1270a3b0",
+        "operationId": "createDocument",
+        "scope": "demoapi",
+        "x": 490,
+        "y": 140,
+        "wires": [
+            [
+                "08320bf2bbd179b4"
+            ]
+        ]
+    },
+    {
+        "id": "3a17bbdbc33eea52",
+        "type": "debug",
+        "z": "a784aa09ec1310bc",
+        "name": "result",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "08320bf2bbd179b4",
+        "type": "change",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "unid",
+                "pt": "flow",
+                "to": "payload['@meta'].unid",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 730,
+        "y": 140,
+        "wires": [
+            [
+                "3a17bbdbc33eea52"
+            ]
+        ]
+    },
+    {
+        "id": "33317c692685a36e",
+        "type": "domino-user-session",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "access": "9a8182a9f4476dc2",
+        "connector": "c8048c5f1270a3b0",
+        "operationId": "getDocument",
+        "scope": "demoapi",
+        "x": 580,
+        "y": 240,
+        "wires": [
+            [
+                "3a17bbdbc33eea52"
+            ]
+        ]
+    },
+    {
+        "id": "6b528207bd2d9076",
+        "type": "inject",
+        "z": "a784aa09ec1310bc",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "unid",
+        "payloadType": "flow",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "f1c680a03fa1c04d"
+            ]
+        ]
+    },
+    {
+        "id": "f1c680a03fa1c04d",
+        "type": "function",
+        "z": "a784aa09ec1310bc",
+        "name": "prep for retrive",
+        "func": "msg.payload = {\n    params : {\n        'unid' : msg.payload\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 240,
+        "wires": [
+            [
+                "33317c692685a36e"
+            ]
+        ]
+    },
+    {
+        "id": "9a8182a9f4476dc2",
+        "type": "domino-access",
+        "name": "DocNotes",
+        "baseUrl": "http://localhost:8880",
+        "scope": "$DATA,$SETUP,MAIL",
+        "authtype": "basic"
+    },
+    {
+        "id": "c8048c5f1270a3b0",
+        "type": "domino-connector",
+        "baseUrl": "http://localhost:8880",
+        "api": "basis"
+    }
+]
