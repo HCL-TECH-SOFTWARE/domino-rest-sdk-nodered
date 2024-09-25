@@ -3,7 +3,7 @@
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 'use strict';
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // Serverside functions for HCL Domino NodeRED
 
 const keepAPI = require('@hcl-software/domino-rest-sdk-node');
@@ -119,7 +119,6 @@ const getKeepScopesServer = (hostname) => {
   }
 
   console.log(`Retrieve scope List for ${hostname}`);
-
   return fetch(hostURL.href)
     .then((result) => successJsonOrError(result))
     .then((json) => {
@@ -264,12 +263,11 @@ const runRequest = (session, operationId, scope, msg, send, singleReply) =>
 /**
  * Processes the data stream
  *
- * Here is the interesting part
- *  we have 4 potential scenarios:
+ * Here is the interesting part we have 4 potential scenarios:
  *  1. JSON not chunked
  *  2. JSON chunked
  *  3. Binary not chunked
- * 4. Binary chunked
+ *  4. Binary chunked
  *
  * @param {ReadableStream} stream
  * @param {json} newMsg
@@ -286,7 +284,7 @@ const processResultStream = (stream, returnMsg, send, singleReply) => {
         .pipeThrough(keepAPI.streamTransformToJson())
         .pipeTo(streamToSend(returnMsg, send));
     }
-    // Anythin else
+    // Anything else
     return stream.pipeTo(streamToSend(returnMsg, send));
   }
 
@@ -390,7 +388,7 @@ const lookupForAdminUI = (req, res) => {
 };
 
 /**
- *  Main function when DOmino processsing needs to happen
+ *  Main function when Domino processsing needs to happen
  *
  * @param {domino-user-session} node The NodeRED Node processing incoming requests
  * @param {json} msg The NodeRED incoming message

@@ -42,8 +42,9 @@ const getAuthMethods = () =>
           {
             value: 'authtype',
             options: [
-              { value: 'basic', label: 'Basic' }
-              //         { value: 'oauth', label: 'oAuth - not yet' }
+              { value: 'basic', label: 'Basic' },
+              { value: 'oauth', label: 'OAuth' },
+              { value: 'token', label: 'Token' }
             ]
           }
         ]
