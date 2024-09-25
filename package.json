@@ -1,6 +1,6 @@
 {
   "name": "@hcl-software/node-red-domino",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect NodeRED to HCL Domino",
   "main": "index.js",
   "scripts": {

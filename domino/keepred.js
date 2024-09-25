@@ -3,7 +3,7 @@
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 'use strict';
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 // Serverside functions for HCL Domino NodeRED
 
 const keepAPI = require('@hcl-software/domino-rest-sdk-node');
