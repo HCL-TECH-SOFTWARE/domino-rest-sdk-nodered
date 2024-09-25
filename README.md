@@ -51,8 +51,7 @@ Check the node help and the official [Domino REST API Documentation](https://ope
 ## Known limitations
 
 - To take advantage of the selection list, you need to add the Credential and COnnection Configuration Nodes and close the DOmino Node. On Open the configuration queries teh server and offers APis, scope and OperationIds found on your selected server.
-- th http response node can't send chunked responses, so in a http flow you need to select `single result (no splitting)`
-- authentication using username/password olny (for now)
+- th http response node can't send chunked responses, so in a http flow you need to select `single result (no splitting)`.
 
 ## Documentation
 
