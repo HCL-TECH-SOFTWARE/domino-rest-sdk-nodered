@@ -4,7 +4,6 @@
  * ========================================================================== */
 
 const keepred = require('./keepred');
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
 
 /**
  * Main NodeRED node <code>domino-user-session</code> depending on two configurstion

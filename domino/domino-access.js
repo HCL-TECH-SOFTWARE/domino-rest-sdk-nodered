@@ -11,19 +11,30 @@ module.exports = function (RED) {
     const node = this;
     node.name = config.name;
     node.baseUrl = config.baseUrl;
-    node.scope = config.scope.replace(',', ' ');
+    node.scope = node.credentials.scope.replace(',', ' ');
     node.authtype = config.authtype;
-    node.username = node.credentials.username;
-    node.password = node.credentials.password;
     node.creds = {
       baseUrl: config.baseUrl,
       credentials: {
-        type: config.authtype,
-        scope: config.scope,
-        username: node.credentials.username,
-        password: node.credentials.password
-      }
+        type: node.authtype
+      },
     };
+
+    if (config.authtype === 'basic') {
+      node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
+      node.creds.credentials.username = node.credentials.username;
+      node.creds.credentials.password = node.credentials.password;
+    } else if (config.authtype === 'oauth') {
+      node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
+      node.creds.credentials.appId = node.credentials.appId;
+      node.creds.credentials.appSecret = node.credentials.appSecret;
+      node.creds.credentials.refreshToken = node.credentials.refreshToken;
+    } else if (config.authtype === 'token') {
+      node.creds.credentials.token = node.credentials.token;
+    } else {
+      console.log(`Authentication type: ${config.authtype} is not supported`);
+    }
+
     try {
       node.dominoAccess = new keepAPI.DominoAccess(node.creds);
     } catch (e) {
@@ -33,8 +44,20 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('domino-access', DominoAccessNode, {
     credentials: {
+      // basic, oauth
+      scope: { type: 'text' },
+      // basic
       username: { type: 'text' },
-      password: { type: 'password' }
-    }
+      // basic
+      password: { type: 'password' },
+      // oauth
+      appId: { type: 'text' },
+      // oauth
+      appSecret: { type: 'password' },
+      // oauth
+      refreshToken: { type: 'password' },
+      // token
+      token: { type: 'password' },
+    },
   });
 };

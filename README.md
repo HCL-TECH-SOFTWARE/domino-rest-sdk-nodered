@@ -10,22 +10,25 @@ This repository contains the NodeRED nodes to interact with the HCL Domino REST 
 
 ## Installation
 
-Install the palette manager or `npm` like any other [NodeRED](https://nodered.org/) node
+Install the palette manager or `npm` like any other [NodeRED](https://nodered.org/) node.
 
 ```bash
 npm install @hcl-software/node-red-domino
 ```
 
 The installation will add one node in `network` and two related configuration nodes.
-![Domino Node](img/dominonode.png). Each node gets configured with a credential and a connection configuration node. Multiple Domino can share the same Credential and Connection node.
+
+![Domino Node](img/dominonode.png)
+
+Each node gets configured with a credential and a connection configuration node. Multiple Domino can share the same credential and connection node.
 
 ## Usage
 
-Each Domino Node can be configured to execute [**one OperationId**](https://opensource.hcltechsw.com/Domino-rest-api/topicguides/howkeepworks.html?h=operationid). The node translates the OperationId into the actual operation URL and checks for mandatory parameters.
+Each Domino node can be configured to execute [**one operation ID**](https://opensource.hcltechsw.com/Domino-rest-api/topicguides/howkeepworks.html?h=operationid). The node translates the operation ID into the actual operation URL and checks for mandatory parameters.
 
 ### Configuration
 
-A new Node and the related configuration nodes show regular entry fields:
+A new node and the related configuration nodes show regular entry fields:
 
 ![Domino Node](img/EmptyDOminoNode.png)
 ![Domino Credential Node](img/EmptyCredentialsNode.png)
@@ -38,21 +41,20 @@ After saving and re-opening the dialogs query the server and populate the drop-d
 ![Domino Credential Node](img/FullCredentialsNode.png)
 ![Domino Connection Node](img/FullConnectionNode.png)
 
-Check the node help and the official [Domino REST API Documentation](https://opensource.hcltechsw.com/Domino-rest-api/) for details, especially around [Operation IDs](https://opensource.hcltechsw.com/Domino-rest-api/references/openapidefinitions.html)
+Check the node help and the official [Domino REST API Documentation](https://opensource.hcltechsw.com/Domino-rest-api/) for details, especially around [operation IDs](https://opensource.hcltechsw.com/Domino-rest-api/references/openapidefinitions.html)
 
 ### Flows
 
-- refer to the exsample directory
-- all parameters (well most of) are in the `msg.payload`
-- payload can have a `params` object for parameters and a `body` object for request bodies. Both objects are optional
-- You can specify a `msg.unid` to interact with one document
-- responses that can have more than one result (lists, query) emit on result for each entry. This can be switched off using `single result (no splitting)`
+- Refer to the example directory.
+- All parameters (well most of) are in the `msg.payload`.
+- Payload can have a `params` object for parameters and a `body` object for request bodies. Both objects are optional.
+- You can specify a `msg.unid` to interact with one document.
+- Responses that can have more than one result (lists, query) emit on result for each entry. This can be switched off using `single result (no splitting)`.
 
 ## Known limitations
 
-- To take advantage of the selection list, you need to add the Credential and COnnection Configuration Nodes and close the DOmino Node. On Open the configuration queries teh server and offers APis, scope and OperationIds found on your selected server.
-- th http response node can't send chunked responses, so in a http flow you need to select `single result (no splitting)`
-- authentication using username/password olny (for now)
+- To take advantage of the selection list, you need to add the credential and connection configuration nodes and close the Domino node. On open, the configuration queries the server and offers APIs, scope and operation IDs found on your selected server.
+- The HTTP response node can't send chunked responses, so in a HTTP flow you need to select `single result (no splitting)`.
 
 ## Documentation
 
@@ -72,3 +74,11 @@ Check the node help and the official [Domino REST API Documentation](https://ope
 ### 0.1.0 November 2023 Release
 
 - initial release
+
+### 0.1.1
+
+- Credential configuration node now has three authentication types:
+
+  - basic
+  - oauth
+  - token
