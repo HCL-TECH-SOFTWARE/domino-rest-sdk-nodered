@@ -1,12 +1,10 @@
 /* ========================================================================== *
- * Copyright (C) 2023 HCL America Inc.                                        *
+ * Copyright (C) 2023, 2025 HCL America Inc.                                  *
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 'use strict';
 
-// Serverside functions for HCL Domino NodeRED
-
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
+const getKeepAPI = require('./keepAPI');
 
 // Caches for "static" calls: apis, operationIds, scopes
 const apiListCache = new Map();
@@ -157,7 +155,7 @@ const makeScopeListForUI = (json) => {
  * @returns JSON for TypedInput as Promise
  */
 const getKeepOperationIdsServer = (hostname, api) =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
     const key = `${hostname}::${api}`;
 
     if (opsListCache.has(key)) {
@@ -167,6 +165,7 @@ const getKeepOperationIdsServer = (hostname, api) =>
 
     console.log(`Retrieve operation List for ${key}`);
 
+    const keepAPI = await getKeepAPI();
     keepAPI.DominoServer.getServer(hostname)
       .then((dominoServer) => dominoServer.getDominoConnector(api))
       .then((dominoConnector) => dominoConnector.getOperations())
@@ -253,7 +252,7 @@ const runRequest = (session, operationId, scope, msg, send, singleReply) =>
         result.headers.forEach((value, key) => (msg.headers[key] = value));
         return result.dataStream;
       })
-      .then((stream) => processResultStream(stream, msg, send, singleReply))
+      .then(async (stream) => await processResultStream(stream, msg, send, singleReply))
       .then(() => resolve())
       .catch((err) => {
         reject(err);
@@ -274,7 +273,8 @@ const runRequest = (session, operationId, scope, msg, send, singleReply) =>
  * @param {function} send
  * @returns void
  */
-const processResultStream = (stream, returnMsg, send, singleReply) => {
+const processResultStream = async (stream, returnMsg, send, singleReply) => {
+  const keepAPI = await getKeepAPI();
   if (isChunked(returnMsg.headers, singleReply)) {
     // JSON Array sequence
     if (isJsonContent(returnMsg.headers)) {
@@ -387,6 +387,26 @@ const lookupForAdminUI = (req, res) => {
     .json({ message: 'actions: keepapis, keepscopes, keepoperationids' });
 };
 
+const loadServerAPI = async (node, keepAPI) => {
+  try {
+    if (!node.connector.server) {
+      node.connector.server = await keepAPI.DominoServer.getServer(node.connector.baseUrl);
+    } else {
+      console.log('using node.connector.server cache')
+    }
+
+    if (!node.connector.apiConnector) {
+      node.connector.apiConnector = await node.connector.server.getDominoConnector(node.connector.api);
+    } else {
+      console.log('using node.connector.apiConnector cache')
+    }
+  } catch (err) {
+    node.error(err);
+  }
+
+  return null;
+};
+
 /**
  *  Main function when Domino processsing needs to happen
  *
@@ -395,7 +415,21 @@ const lookupForAdminUI = (req, res) => {
  * @param {function} send  - call with new results 0:n times
  * @param {function} done  call when done, takes an error as param id needed
  */
-const executeDominoRequest = (node, msg, send, done) => {
+const executeDominoRequest = async (node, msg, send, done) => {
+  const keepAPI = await getKeepAPI();
+  await loadServerAPI(node, keepAPI);
+
+  if (node.connector.apiConnector == null) {
+    node.status({
+      fill: 'red',
+      shape: 'dot',
+      text: 'Failed to load server API.'
+    });
+
+    done(new Error('API connector is null.'));
+    return;
+  }
+
   if (!node.session) {
     node.session = new keepAPI.DominoUserSession(
       node.access.dominoAccess,
