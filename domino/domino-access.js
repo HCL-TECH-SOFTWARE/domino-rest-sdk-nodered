@@ -1,9 +1,33 @@
 /* ========================================================================== *
- * Copyright (C) 2023 HCL America Inc.                                        *
+ * Copyright (C) 2023, 2025 HCL America Inc.                                  *
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
+const getKeepAPI = require('./keepAPI');
+
+const loadCreds = async (node, config) => {
+  if (config.authtype === 'basic') {
+    node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
+    node.creds.credentials.username = node.credentials.username;
+    node.creds.credentials.password = node.credentials.password;
+  } else if (config.authtype === 'oauth') {
+    node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
+    node.creds.credentials.appId = node.credentials.appId;
+    node.creds.credentials.appSecret = node.credentials.appSecret;
+    node.creds.credentials.refreshToken = node.credentials.refreshToken;
+  } else if (config.authtype === 'token') {
+    node.creds.credentials.token = node.credentials.token;
+  } else {
+    console.log(`Authentication type: ${config.authtype} is not supported`);
+  }
+
+  try {
+    const keepAPI = await getKeepAPI();
+    node.dominoAccess = new keepAPI.DominoAccess(node.creds);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 module.exports = function (RED) {
   function DominoAccessNode(config) {
@@ -20,26 +44,7 @@ module.exports = function (RED) {
       },
     };
 
-    if (config.authtype === 'basic') {
-      node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
-      node.creds.credentials.username = node.credentials.username;
-      node.creds.credentials.password = node.credentials.password;
-    } else if (config.authtype === 'oauth') {
-      node.creds.credentials.scope = node.credentials.scope.replace(',', ' ');
-      node.creds.credentials.appId = node.credentials.appId;
-      node.creds.credentials.appSecret = node.credentials.appSecret;
-      node.creds.credentials.refreshToken = node.credentials.refreshToken;
-    } else if (config.authtype === 'token') {
-      node.creds.credentials.token = node.credentials.token;
-    } else {
-      console.log(`Authentication type: ${config.authtype} is not supported`);
-    }
-
-    try {
-      node.dominoAccess = new keepAPI.DominoAccess(node.creds);
-    } catch (e) {
-      console.log(e);
-    }
+    loadCreds(node, config);
   }
 
   RED.nodes.registerType('domino-access', DominoAccessNode, {

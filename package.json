@@ -1,6 +1,6 @@
 {
   "name": "@hcl-software/node-red-domino",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Connect NodeRED to HCL Domino",
   "main": "index.js",
   "scripts": {
@@ -34,16 +34,17 @@
     }
   },
   "dependencies": {
-    "@hcl-software/domino-rest-sdk-node": "^0.2.0"
+    "@hcl-software/domino-rest-sdk-node": "^0.2.2"
   },
   "devDependencies": {
-    "chai": "^4.3.10",
-    "chai-as-promised": "^7.1.1",
-    "mocha": "^10.2.0",
-    "node-red": "^3.1.0",
-    "node-red-node-test-helper": "^0.3.2",
-    "nyc": "^15.1.0",
+    "@istanbuljs/esm-loader-hook": "^0.2.0",
+    "chai": "^5.1.2",
+    "chai-as-promised": "^8.0.1",
+    "mocha": "^11.1.0",
+    "node-red": "^4.0.8",
+    "node-red-node-test-helper": "^0.3.4",
+    "nyc": "^17.1.0",
     "rewire": "^7.0.0",
-    "sinon": "^17.0.1"
+    "sinon": "^19.0.2"
   }
 }
