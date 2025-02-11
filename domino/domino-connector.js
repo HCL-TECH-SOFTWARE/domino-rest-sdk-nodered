@@ -3,18 +3,18 @@
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
+import { DominoServer } from '@hcl-software/domino-rest-sdk-node';
 
 const loadServerAPI = async (node) => {
   try {
-    node.server = await keepAPI.DominoServer.getServer(node.baseUrl);
+    node.server = await DominoServer.getServer(node.baseUrl);
     node.apiConnector = await node.server.getDominoConnector(node.api);
   } catch (err) {
     node.error(err);
   }
 };
 
-module.exports = function (RED) {
+export default function (RED) {
   function DominoConnectorNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -23,4 +23,4 @@ module.exports = function (RED) {
     loadServerAPI(node);
   }
   RED.nodes.registerType('domino-connector', DominoConnectorNode);
-};
+}

@@ -3,9 +3,9 @@
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
+import { DominoAccess } from '@hcl-software/domino-rest-sdk-node';
 
-module.exports = function (RED) {
+export default function (RED) {
   function DominoAccessNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -17,7 +17,7 @@ module.exports = function (RED) {
       baseUrl: config.baseUrl,
       credentials: {
         type: node.authtype
-      },
+      }
     };
 
     if (config.authtype === 'basic') {
@@ -36,7 +36,7 @@ module.exports = function (RED) {
     }
 
     try {
-      node.dominoAccess = new keepAPI.DominoAccess(node.creds);
+      node.dominoAccess = new DominoAccess(node.creds);
     } catch (e) {
       console.log(e);
     }
@@ -57,7 +57,7 @@ module.exports = function (RED) {
       // oauth
       refreshToken: { type: 'password' },
       // token
-      token: { type: 'password' },
-    },
+      token: { type: 'password' }
+    }
   });
-};
+}

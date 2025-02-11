@@ -6,7 +6,7 @@
 
 // Serverside functions for HCL Domino NodeRED
 
-const keepAPI = require('@hcl-software/domino-rest-sdk-node');
+import { DominoServer, streamSplit, streamTransformToJson, DominoUserSession } from '@hcl-software/domino-rest-sdk-node';
 
 // Caches for "static" calls: apis, operationIds, scopes
 const apiListCache = new Map();
@@ -68,9 +68,7 @@ const makeApiListForUI = (json) => {
     types: []
   };
   let options = [];
-  Object.values(json).forEach((o) =>
-    options.push({ value: o.name, label: o.title + ':' + o.version })
-  );
+  Object.values(json).forEach((o) => options.push({ value: o.name, label: o.title + ':' + o.version }));
   options.sort((a, b) => lightSorter(a, b, 'name'));
   let api = { value: 'keepapi', options: options };
   apiList.types.push(api);
@@ -113,9 +111,7 @@ const getKeepScopesServer = (hostname) => {
 
   if (scopeListCache.has(hostURL.href)) {
     console.log(`Cache hit: scope List for ${hostname}`);
-    return Promise.resolve(
-      makeScopeListForUI(scopeListCache.get(hostURL.href))
-    );
+    return Promise.resolve(makeScopeListForUI(scopeListCache.get(hostURL.href)));
   }
 
   console.log(`Retrieve scope List for ${hostname}`);
@@ -167,7 +163,7 @@ const getKeepOperationIdsServer = (hostname, api) =>
 
     console.log(`Retrieve operation List for ${key}`);
 
-    keepAPI.DominoServer.getServer(hostname)
+    DominoServer.getServer(hostname)
       .then((dominoServer) => dominoServer.getDominoConnector(api))
       .then((dominoConnector) => dominoConnector.getOperations())
       .then((operations) => {
@@ -223,9 +219,7 @@ const runRequest = (session, operationId, scope, msg, send, singleReply) =>
 
     // Parameters from payload
     if (payload.params) {
-      Object.keys(payload.params).forEach((k) =>
-        options.params.set(k, payload.params[k])
-      );
+      Object.keys(payload.params).forEach((k) => options.params.set(k, payload.params[k]));
     }
 
     // Special attention for unid and uuid
@@ -280,8 +274,8 @@ const processResultStream = (stream, returnMsg, send, singleReply) => {
     if (isJsonContent(returnMsg.headers)) {
       return stream
         .pipeThrough(new TextDecoderStream())
-        .pipeThrough(keepAPI.streamSplit())
-        .pipeThrough(keepAPI.streamTransformToJson())
+        .pipeThrough(streamSplit())
+        .pipeThrough(streamTransformToJson())
         .pipeTo(streamToSend(returnMsg, send));
     }
     // Anything else
@@ -382,9 +376,7 @@ const lookupForAdminUI = (req, res) => {
     return;
   }
 
-  return res
-    .status(400)
-    .json({ message: 'actions: keepapis, keepscopes, keepoperationids' });
+  return res.status(400).json({ message: 'actions: keepapis, keepscopes, keepoperationids' });
 };
 
 /**
@@ -397,10 +389,7 @@ const lookupForAdminUI = (req, res) => {
  */
 const executeDominoRequest = (node, msg, send, done) => {
   if (!node.session) {
-    node.session = new keepAPI.DominoUserSession(
-      node.access.dominoAccess,
-      node.connector.apiConnector
-    );
+    node.session = new DominoUserSession(node.access.dominoAccess, node.connector.apiConnector);
   }
 
   node.status({
@@ -409,14 +398,7 @@ const executeDominoRequest = (node, msg, send, done) => {
     text: node.connector.apiConnector.baseUrl
   });
 
-  runRequest(
-    node.session,
-    node.operationId,
-    node.scope,
-    msg,
-    send,
-    node.singleReturn
-  )
+  runRequest(node.session, node.operationId, node.scope, msg, send, node.singleReturn)
     .then(() => {
       node.status({});
       done();
@@ -431,7 +413,7 @@ const executeDominoRequest = (node, msg, send, done) => {
     });
 };
 
-module.exports = {
+export default {
   getKeepApiListServer,
   getKeepScopesServer,
   getKeepOperationIdsServer,

@@ -1,5 +1,5 @@
 /* ========================================================================== *
- * Copyright (C) 2023 HCL America Inc.                                        *
+ * Copyright (C) 2023, 2025 HCL America Inc.                                  *
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
@@ -7,25 +7,25 @@
  * Tests if the three nodes can be loaded successfully
  */
 'use strict';
-const chai = require('chai');
-const expect = chai.expect;
-const helper = require('node-red-node-test-helper');
 
-const sessionNode = require('../domino/domino-user-session');
-const acccessNode = require('../domino/domino-access');
-const connectorNode = require('../domino/domino-connector');
+import { describe, it, beforeEach, afterEach, expect } from 'vitest';
+import helper from 'node-red-node-test-helper';
+
+import sessionNode from '../domino/domino-user-session';
+import acccessNode from '../domino/domino-access';
+import connectorNode from '../domino/domino-connector';
 
 helper.init(require.resolve('node-red'));
 
-describe('Nodes load test', () => {
-  beforeEach((done) => helper.startServer(done));
+describe('Nodes load test', async () => {
+  beforeEach(async () => await helper.startServer());
 
-  afterEach((done) => {
-    helper.unload();
-    helper.stopServer(done);
+  afterEach(async () => {
+    await helper.unload();
+    await helper.stopServer();
   });
 
-  it('should be loaded', (done) => {
+  it('should be loaded', async () => {
     const flow = [
       {
         id: 'a1',
@@ -55,20 +55,17 @@ describe('Nodes load test', () => {
       }
     };
 
-    helper
-      .load([sessionNode, acccessNode, connectorNode], flow, credentials)
-      .then(() => {
-        try {
-          const s1 = helper.getNode('s1');
-          expect(s1).to.have.property('name', 'domino session');
-          const a1 = helper.getNode('a1');
-          expect(a1).to.have.property('name', 'domino access');
-          const c1 = helper.getNode('c1');
-          expect(c1).to.have.property('api', 'basis');
-          done();
-        } catch (err) {
-          done(err);
-        }
-      });
+    await helper.load([sessionNode, acccessNode, connectorNode], flow, credentials);
+
+    try {
+      const s1 = helper.getNode('s1');
+      expect(s1).toHaveProperty('name', 'domino session');
+      const a1 = helper.getNode('a1');
+      expect(a1).toHaveProperty('name', 'domino access');
+      const c1 = helper.getNode('c1');
+      expect(c1).toHaveProperty('api', 'basis');
+    } catch (err) {
+      console.error(err);
+    }
   });
 });

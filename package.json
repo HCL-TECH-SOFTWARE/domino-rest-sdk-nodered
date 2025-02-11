@@ -1,13 +1,14 @@
 {
   "name": "@hcl-software/node-red-domino",
-  "version": "0.1.1",
+  "version": "0.2.2",
   "description": "Connect NodeRED to HCL Domino",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha"
+    "test": "nyc --reporter=html --reporter=text vitest",
+    "vitest": "vitest run"
   },
   "engines": {
-    "node": ">20.0.0"
+    "node": ">22.0.0"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,7 @@
   },
   "homepage": "https://opensource.hcltechsw.com/Domino-rest-api/",
   "node-red": {
-    "version": ">=3.1.0",
+    "version": ">=4.0.0",
     "nodes": {
       "domino-connector": "domino/domino-connector.js",
       "domino-user-session": "domino/domino-user-session.js",
@@ -34,16 +35,14 @@
     }
   },
   "dependencies": {
-    "@hcl-software/domino-rest-sdk-node": "^0.2.0"
+    "@hcl-software/domino-rest-sdk-node": "^0.2.2"
   },
   "devDependencies": {
-    "chai": "^4.3.10",
-    "chai-as-promised": "^7.1.1",
-    "mocha": "^10.2.0",
-    "node-red": "^3.1.0",
-    "node-red-node-test-helper": "^0.3.2",
-    "nyc": "^15.1.0",
+    "node-red": "4.0.8",
+    "node-red-node-test-helper": "0.3.4",
+    "nyc": "17.1.0",
     "rewire": "^7.0.0",
-    "sinon": "^17.0.1"
+    "sinon": "19.0.2",
+    "vitest": "^3.0.5"
   }
 }

@@ -3,7 +3,7 @@
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
-const keepred = require('./keepred');
+import { executeDominoRequest, lookupForAdminUI } from './keepred';
 
 /**
  * Main NodeRED node <code>domino-user-session</code> depending on two configurstion
@@ -11,7 +11,7 @@ const keepred = require('./keepred');
  *
  * @param {NodeRED} RED  NodeRED runtime
  */
-module.exports = function (RED) {
+export default function (RED) {
   function DominoUserSessionNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -25,9 +25,7 @@ module.exports = function (RED) {
     node.session = null;
 
     // Call to backend function
-    node.on('input', (msg, send, done) =>
-      keepred.executeDominoRequest(node, msg, send, done)
-    );
+    node.on('input', (msg, send, done) => executeDominoRequest(node, msg, send, done));
   }
 
   RED.nodes.registerType('domino-user-session', DominoUserSessionNode);
@@ -35,9 +33,5 @@ module.exports = function (RED) {
   /**
    * Helper function to configure the [multi]select lists in the Node configuration
    */
-  RED.httpAdmin.get(
-    '/hcl-domino-rest-api-config',
-    RED.auth.needsPermission('flows.read'),
-    keepred.lookupForAdminUI
-  );
-};
+  RED.httpAdmin.get('/hcl-domino-rest-api-config', RED.auth.needsPermission('flows.read'), lookupForAdminUI);
+}
