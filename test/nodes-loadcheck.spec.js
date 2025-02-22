@@ -1,5 +1,5 @@
 /* ========================================================================== *
- * Copyright (C) 2023 HCL America Inc.                                        *
+ * Copyright (C) 2023, 2025 HCL America Inc.                                  *
  * Apache-2.0 license   https://www.apache.org/licenses/LICENSE-2.0           *
  * ========================================================================== */
 
@@ -7,22 +7,29 @@
  * Tests if the three nodes can be loaded successfully
  */
 'use strict';
-const chai = require('chai');
-const expect = chai.expect;
-const helper = require('node-red-node-test-helper');
 
-const sessionNode = require('../domino/domino-user-session');
-const acccessNode = require('../domino/domino-access');
-const connectorNode = require('../domino/domino-connector');
+let expect;
 
-helper.init(require.resolve('node-red'));
+const nodeRedNodeTestHelper = require('node-red-node-test-helper');
+const sessionNode = require('../domino/domino-user-session.js');
+const acccessNode = require('../domino/domino-access.js');
+const connectorNode = require('../domino/domino-connector.js');
+
+nodeRedNodeTestHelper.init(require.resolve('node-red'));
 
 describe('Nodes load test', () => {
-  beforeEach((done) => helper.startServer(done));
+  before(async () => {
+    expect = (await import ('chai')).expect;
+    const use = (await import('chai')).use;
+    const chaiAsPromised = (await import('chai-as-promised')).default;
+    use(chaiAsPromised);
+  });
+
+  beforeEach((done) => nodeRedNodeTestHelper.startServer(done));
 
   afterEach((done) => {
-    helper.unload();
-    helper.stopServer(done);
+    nodeRedNodeTestHelper.unload();
+    nodeRedNodeTestHelper.stopServer(done);
   });
 
   it('should be loaded', (done) => {
@@ -32,7 +39,6 @@ describe('Nodes load test', () => {
         type: 'domino-access',
         name: 'domino access',
         baseUrl: 'https://frascati.projectkeep.io',
-        scope: '$DATA',
         authtype: 'basic'
       },
       {
@@ -51,19 +57,19 @@ describe('Nodes load test', () => {
     const credentials = {
       a1: {
         username: 'username',
-        password: 'password'
+        password: 'password',
+        scope: '$DATA'
       }
     };
 
-    helper
-      .load([sessionNode, acccessNode, connectorNode], flow, credentials)
+    nodeRedNodeTestHelper.load([sessionNode, acccessNode, connectorNode], flow, credentials)
       .then(() => {
         try {
-          const s1 = helper.getNode('s1');
+          const s1 = nodeRedNodeTestHelper.getNode('s1');
           expect(s1).to.have.property('name', 'domino session');
-          const a1 = helper.getNode('a1');
+          const a1 = nodeRedNodeTestHelper.getNode('a1');
           expect(a1).to.have.property('name', 'domino access');
-          const c1 = helper.getNode('c1');
+          const c1 = nodeRedNodeTestHelper.getNode('c1');
           expect(c1).to.have.property('api', 'basis');
           done();
         } catch (err) {

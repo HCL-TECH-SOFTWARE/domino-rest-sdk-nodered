@@ -1,6 +1,6 @@
 # NodeRED access to HCL Domino's REST API
 
-(C) 2023 HCL America Inc. Apache-2.0 license [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
+(C) 2025 HCL America Inc. Apache-2.0 license [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 [![npm](https://nodei.co/npm/@hcl-software/node-red-domino.png)](https://www.npmjs.com/package/@hcl-software/node-red-domino)
 
