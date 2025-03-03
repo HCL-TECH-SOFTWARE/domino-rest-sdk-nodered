@@ -37,7 +37,7 @@
     "@hcl-software/domino-rest-sdk-node": "^0.2.2"
   },
   "devDependencies": {
-    "@istanbuljs/esm-loader-hook": "^0.2.0",
+    "@istanbuljs/esm-loader-hook": "^0.3.0",
     "chai": "^5.1.2",
     "chai-as-promised": "^8.0.1",
     "mocha": "^11.1.0",
