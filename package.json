@@ -45,6 +45,6 @@
     "node-red-node-test-helper": "^0.3.4",
     "nyc": "^17.1.0",
     "rewire": "^7.0.0",
-    "sinon": "^19.0.2"
+    "sinon": "^20.0.0"
   }
 }
